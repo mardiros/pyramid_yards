@@ -68,8 +68,11 @@ class RequestSchema(object):
                     data = getattr(request, attr.location)
                     if isinstance(attr, colander.SequenceSchema):
                         data = getattr(request, attr.location)
-                        vals = attr.deserialize(data.getall(key) or
-                                                attr.default)
+                        if attr.location == 'json':
+                            getall = data.get
+                        else:
+                            getall = data.getall
+                        vals = attr.deserialize(getall(key) or attr.default)
                         if vals != colander.drop:
                             vals = [val for val in vals
                                     if val != colander.drop]
